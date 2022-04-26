@@ -22,6 +22,7 @@
 #include <stdio.h>   // Utilisé pour le I/O du programme (scanf, printf)
 #include <stdlib.h>  // Macros utiles (EXIT_SUCCESS)
 #include <stdint.h>  // Afin d'utiliser des grandeurs de variables fixes.
+#include <stdbool.h> // Ajout de paramètres booléens
 
 int main(void) {
    
