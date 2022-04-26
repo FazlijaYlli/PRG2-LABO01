@@ -6,6 +6,10 @@
  Date creation  : 26.04.22
 
  Description    : Laboratoire 01 de PRG2 : Simulation d'une planche de type "Galton Board".
+
+                  Deux entrée sont demandées à l'utilisateurs, le nombre de billes et le nombre d'étages de
+                  la planche, dans cet ordre.
+
                   Affichage du nombre de billes à chaques étages de la planche, ainsi qu'un histogramme
                   de la ditribution des billes.
 
