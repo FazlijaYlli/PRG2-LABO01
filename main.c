@@ -19,9 +19,11 @@
  -----------------------------------------------------------------------------------
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>   // Utilisé pour le I/O du programme (scanf, printf)
+#include <stdlib.h>  // Macros utiles (EXIT_SUCCESS)
+#include <stdint.h>  // Afin d'utiliser des grandeurs de variables fixes.
 
 int main(void) {
+   
    return EXIT_SUCCESS;
 }
