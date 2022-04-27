@@ -23,6 +23,7 @@
 #include <stdlib.h>  // Macros utiles (EXIT_SUCCESS)
 #include <stdint.h>  // Afin d'utiliser des grandeurs de variables fixes.
 #include <stdbool.h> // Ajout de paramètres booléens
+#include <assert.h>
 
 // Utiliser la macro CHAINE permets de placer le contenu d'une macro dans une chaîne de caractères.
 #define CHAINE_CODE(x) #x
@@ -58,6 +59,7 @@ void viderBuffer(void) {
 }
 
 int saisieIntervalle(char* message, char* erreur, int min, int max) {
+      assert(min > max);
       int entree;
       do {
          printf("%s [%d - %d] : ", message, min, max);
