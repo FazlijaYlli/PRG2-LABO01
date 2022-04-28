@@ -41,7 +41,7 @@
 // Limite de la taille du chiffre en entrée pour éviter les overflow de int.
 #define MAX_CHAR 6
 
-int saisieIntervalle(char* message, char* erreur, int min, int max);
+uint16_t saisieIntervalle(char* message, char* erreur, uint16_t min, uint16_t max);
 void viderBuffer(void);
 
 int main(void) {
@@ -59,13 +59,13 @@ void viderBuffer(void) {
    while ((c = getchar()) != '\n' && c != EOF);
 }
 
-int saisieIntervalle(char* message, char* erreur, int min, int max) {
-      assert(min < max);
-      int entree;
-      do {
-         printf("%s [%d - %d] : ", message, min, max);
-      } while(
-         (!(scanf("%"CHAINE(MAX_CHAR)"d%*[^\n]", &entree)) || (entree > max || entree < min))
-         && (viderBuffer(),printf("%s\n",erreur)));
-      return entree;
+uint16_t saisieIntervalle(char* message, char* erreur, uint16_t min, uint16_t max) {
+   assert(min < max);
+   uint16_t entree;
+   do {
+      printf("%s [%d - %d] : ", message, min, max);
+   } while(
+      (!(scanf("%"CHAINE(MAX_CHAR)"d%*[^\n]", &entree)) || (entree > max || entree < min))
+      && (viderBuffer(),printf("%s\n",erreur)));
+   return entree;
 }
