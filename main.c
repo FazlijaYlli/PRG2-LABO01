@@ -21,9 +21,10 @@
 
 #include <stdio.h>   // Utilisé pour le I/O du programme (scanf, printf)
 #include <stdlib.h>  // Macros utiles (EXIT_SUCCESS)
+#include <time.h>    // Pour time(NULL), création d'aléatoire
 #include <stdint.h>  // Afin d'utiliser des grandeurs de variables fixes.
 #include <assert.h>  // Ajout de assert
-#include <math.h>    // Utilisation de sqrt()
+#include <math.h>    // Utilisation de ceil et log10
 
 // Utiliser la macro CHAINE permets de placer le contenu d'une macro (qui n'est pas une chaine de caractères)
 // dans une chaîne de caractères.
@@ -56,15 +57,10 @@
 /// \return uint16_t valeur saisie par l'utilisateur après vérification
 uint16_t saisieIntervalle(char *message, char *erreur, uint16_t min, uint16_t max);
 
-/// Affiche les differents passages des billes dans la planche de Galton
+/// Affiche les differents passages des billes dans la planche de Galton et son histogramme
 /// \param plancheGalton planche de galton associée
 /// \param nbrRangees nombre de rangée de la planche
 void affichageSimulationGaltonBoard(const uint16_t **plancheGalton, uint16_t nbrRangees);
-
-/// Affiche l'histogramme associé à la planche en parametre
-/// \param plancheGalton planche de galton associée
-/// \param nbrRangees nombre de rangée de la planche
-void affichageHistogramme(const uint16_t **plancheGalton, uint16_t nbrRangees);
 
 /// Crée une planche de galton avec les parametres fournis \n
 /// /!\ Attention : nécéssaire d'utiliser free(plancheGaltion[0]) afin d'eviter les fuites de mémoires
@@ -82,11 +78,11 @@ int main(void) {
    uint16_t nbrRangees = saisieIntervalle(MSG_RANGEE, MSG_ERREUR, MIN_RANGEE, MAX_RANGEE);
 
    uint16_t **PlancheGalton = simulationPlancheGalton(nbrRangees, nbrBilles);
-   affichageSimulationGaltonBoard((const uint16_t **) PlancheGalton, nbrRangees);
-   affichageHistogramme((const uint16_t **) PlancheGalton, nbrRangees);
+   affichageSimulationGaltonBoard((const uint16_t **) (uint16_t **) PlancheGalton, nbrRangees);
    system("pause");
 
    free(PlancheGalton[0]);
+   free(PlancheGalton);
 
    return EXIT_SUCCESS;
 }
@@ -108,21 +104,29 @@ uint16_t saisieIntervalle(char *message, char *erreur, uint16_t min, uint16_t ma
 }
 
 void affichageSimulationGaltonBoard(const uint16_t **plancheGalton, uint16_t nbrRangees) {
-   size_t indexCompteur = 0;
-   uint8_t nbrChiffreSommet = (uint8_t) ceil(log10(plancheGalton[0][0]));
 
-   for (size_t i = 0; i < nbrRangees; ++i) {
-      for (size_t s = 0; s < nbrRangees - i; ++s)
-         printf("%*c", (nbrChiffreSommet + 1) / 2, ' ');
-      for (size_t j = 0; j <= i; ++j, ++indexCompteur) {
-         printf("%*d", nbrChiffreSommet + 1, plancheGalton[0][indexCompteur]);
+   /////////////////////
+   // PARTIE PYRAMIDE
+   /////////////////////
+
+   size_t indexCompteur = 0;
+   uint8_t nbrChiffreSommet = (uint8_t) floor(log10(plancheGalton[0][0]));
+   uint16_t multiplicateurEspace = nbrRangees;
+
+   printf("\n");
+   for (size_t i = 0; i < nbrRangees; ++i,--multiplicateurEspace) {
+      for (size_t j = 0; j <= i; ++j, ++indexCompteur)  {
+         if (!j)
+            printf("%*c", (multiplicateurEspace * (nbrChiffreSommet + 1))/2, ' ');
+         printf("% *d", nbrChiffreSommet + 1, plancheGalton[0][indexCompteur]);
       }
       printf("%c", '\n');
    }
    printf("%c", '\n');
-}
 
-void affichageHistogramme(const uint16_t **plancheGalton, uint16_t nbrRangees) {
+   /////////////////////
+   // PARTIE HISTOGRAMME
+   /////////////////////
 
    // On veut trouver la valeur maxmimum de notre dernière rangée de clous. On fait une recherche linéaire.
    uint16_t maximumTotal = 0;
@@ -145,38 +149,53 @@ void affichageHistogramme(const uint16_t **plancheGalton, uint16_t nbrRangees) {
       uint16_t nbrBarre = plancheGalton[1][i] / palierBarre;
       histogramme[i] = nbrBarre;
    }
-   for (int i = 15; i > 0; --i) {
+   for (int i = PALIER_HIST; i > 0; --i) {
+      printf("  ");
       for (int j = 0; j < nbrRangees; ++j) {
          if (histogramme[j] >= i)
-            printf("* ");
+            printf("%*c", nbrChiffreSommet + 1, '*');
          else
-            printf("  ");
+            printf("%*c", nbrChiffreSommet + 1, ' ');
       }
       printf("\n");
    }
+   printf("\n");
 }
 
 uint16_t **simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
+
+   //generation d'une graine aléatoire
+   srand((unsigned int) time( NULL ));
 
    uint16_t nbrCloux = (uint16_t) (((nbrRangees * (nbrRangees + 1)) / 2) - (nbrRangees));
 
    uint16_t *compteurBilles = (uint16_t *) calloc(nbrCloux + nbrRangees + 1, sizeof(uint16_t));
    assert(compteurBilles != NULL); // assertion si allocation impossible.
-
    uint16_t *compteurBacBilles = &compteurBilles[nbrCloux];
 
+   //la rangee actuelle
+   uint16_t rangeeActuel = 1;
+   //nombre de clou precedant la rangee actuelle
+   uint16_t sommeClous = 1;
+   //valeur du compteur du premier clou
    compteurBilles[0] = nbrBilles;
-   for (size_t i = 0; i < nbrCloux; ++i) {
-      //TODO : Changer formule pour trouver etageActuel
-      uint16_t etageActuel = (uint8_t) ((sqrt(1 + (double) (8 * (i))) - 1) / 2) + 1;
-      for (size_t j = 0; j < compteurBilles[i]; ++j) {
-         if (rand() % 2)
-            ++compteurBilles[i + etageActuel + 1];
-         else
-            ++compteurBilles[i + etageActuel];
+
+   //iteration à travers tout les clous de la planche
+   for (size_t clouActuel = 0; clouActuel < nbrCloux; ++clouActuel) {
+
+      //condition pour determiner la rangee actuelle
+      if (clouActuel + 1 > sommeClous){
+         ++rangeeActuel;
+         sommeClous += rangeeActuel;
       }
+
+      //incrementation des compteurs sous le compteur n°clouActuel selon l'aléatoire
+      for (size_t j = 0; j < compteurBilles[clouActuel]; ++j)
+         rand() & 1 ? ++compteurBilles[clouActuel + rangeeActuel + 1] : ++compteurBilles[clouActuel + rangeeActuel];
+
    }
-   const uint16_t **plancheGalton = (const uint16_t **) calloc(2, sizeof(uint16_t *));
+
+   uint16_t **plancheGalton = (uint16_t **) malloc(2*sizeof(uint16_t *));
    plancheGalton[0] = compteurBilles;
    plancheGalton[1] = compteurBacBilles;
 
