@@ -118,7 +118,7 @@ uint16_t saisieIntervalle(char *message, char *erreur, uint16_t min, uint16_t ma
    do {
       printf("%s [%d - %d] : ", message, min, max);
    } while (
-         (!(scanf("%"CHAINE(MAX_CHAR)"d%*[^\n]", &entree))
+         (!(scanf("%"CHAINE(MAX_CHAR)"ud%*[^\n]", &entree))
          || (entree > max || entree < min))
          && (viderBuffer(), printf("%s\n", erreur)));
 
@@ -199,7 +199,7 @@ uint16_t** simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
       (((nbrRangees * (nbrRangees + 1)) / 2) - (nbrRangees));
 
    uint16_t *compteurBilles = (uint16_t *)
-      calloc(nbrCloux + nbrRangees + 1, sizeof(uint16_t));
+      calloc((size_t)(nbrCloux + nbrRangees + 1), sizeof(uint16_t));
 
    assert(compteurBilles != NULL); // assertion si allocation impossible.
    uint16_t *compteurBacBilles = &compteurBilles[nbrCloux];
