@@ -114,10 +114,10 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton, uint16_t nbr
    uint16_t multiplicateurEspace = nbrRangees;
 
    printf("\n");
-   for (size_t i = 0; i < nbrRangees; ++i,--multiplicateurEspace) {
-      for (size_t j = 0; j <= i; ++j, ++indexCompteur)  {
+   for (size_t i = 0; i < nbrRangees; ++i, --multiplicateurEspace) {
+      for (size_t j = 0; j <= i; ++j, ++indexCompteur) {
          if (!j)
-            printf("%*c", (multiplicateurEspace * (nbrChiffreSommet + 1))/2, ' ');
+            printf("%*c", (multiplicateurEspace * (nbrChiffreSommet + 1)) / 2, ' ');
          printf("% *d", nbrChiffreSommet + 1, plancheGalton[0][indexCompteur]);
       }
       printf("%c", '\n');
@@ -165,7 +165,7 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton, uint16_t nbr
 uint16_t **simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
 
    //generation d'une graine aléatoire
-   srand((unsigned int) time( NULL ));
+   srand((unsigned int) time(NULL));
 
    uint16_t nbrCloux = (uint16_t) (((nbrRangees * (nbrRangees + 1)) / 2) - (nbrRangees));
 
@@ -184,7 +184,7 @@ uint16_t **simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
    for (size_t clouActuel = 0; clouActuel < nbrCloux; ++clouActuel) {
 
       //condition pour determiner la rangee actuelle
-      if (clouActuel + 1 > sommeClous){
+      if (clouActuel + 1 > sommeClous) {
          ++rangeeActuel;
          sommeClous += rangeeActuel;
       }
@@ -195,7 +195,7 @@ uint16_t **simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
 
    }
 
-   uint16_t **plancheGalton = (uint16_t **) malloc(2*sizeof(uint16_t *));
+   uint16_t **plancheGalton = (uint16_t **) malloc(2 * sizeof(uint16_t *));
    plancheGalton[0] = compteurBilles;
    plancheGalton[1] = compteurBacBilles;
 
