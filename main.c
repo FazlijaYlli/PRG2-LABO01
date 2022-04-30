@@ -118,7 +118,7 @@ uint16_t saisieIntervalle(char *message, char *erreur, uint16_t min, uint16_t ma
    do {
       printf("%s [%d - %d] : ", message, min, max);
    } while (
-         (!(scanf("%"CHAINE(MAX_CHAR)"ud%*[^\n]", &entree))
+         (!(scanf("%"CHAINE(MAX_CHAR)"u%*[^\n]", &entree))
          || (entree > max || entree < min))
          && (viderBuffer(), printf("%s\n", erreur)));
 
@@ -134,7 +134,7 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
    /////////////////////
 
    size_t indexCompteur = 0;
-   uint8_t nbrChiffreSommet = (uint8_t) floor(log10(plancheGalton[0][0]));
+   uint8_t nbrChiffreSommet = (uint8_t) ceil(log10(plancheGalton[0][0]));
    uint16_t multiplicateurEspace = nbrRangees;
 
    printf("\n");
