@@ -126,7 +126,8 @@ uint16_t saisieIntervalle(char *message, char *erreur, uint16_t min, uint16_t ma
    return (uint16_t)entree;
 }
 
-void affichageSimulationGaltonBoard(const uint16_t **plancheGalton, uint16_t nbrRangees) {
+void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
+                                    uint16_t nbrRangees) {
 
    /////////////////////
    // PARTIE PYRAMIDE
@@ -140,8 +141,11 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton, uint16_t nbr
    for (size_t i = 0; i < nbrRangees; ++i, --multiplicateurEspace) {
       for (size_t j = 0; j <= i; ++j, ++indexCompteur) {
          if (!j)
-            printf("%*c", (multiplicateurEspace * (nbrChiffreSommet + 1)) / 2, ' ');
-         printf("% *d", nbrChiffreSommet + 1, plancheGalton[0][indexCompteur]);
+            printf("%*c",
+                   (multiplicateurEspace * (nbrChiffreSommet + 1)) / 2,
+                   ' ');
+         printf("% *d", nbrChiffreSommet + 1,
+                plancheGalton[0][indexCompteur]);
       }
       printf("%c", '\n');
    }
@@ -151,7 +155,8 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton, uint16_t nbr
    // PARTIE HISTOGRAMME
    /////////////////////
 
-   // On veut trouver la valeur maxmimum de notre dernière rangée de clous. On fait une recherche linéaire.
+   // On veut trouver la valeur maxmimum de notre dernière rangée de clous.
+   // On fait une recherche linéaire.
    uint16_t maximumTotal = 0;
    uint16_t maximumActuel;
    uint16_t gauche;
@@ -190,9 +195,12 @@ uint16_t** simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
    //generation d'une graine aléatoire
    srand((unsigned int) time(NULL));
 
-   uint16_t nbrCloux = (uint16_t) (((nbrRangees * (nbrRangees + 1)) / 2) - (nbrRangees));
+   uint16_t nbrCloux = (uint16_t)
+      (((nbrRangees * (nbrRangees + 1)) / 2) - (nbrRangees));
 
-   uint16_t *compteurBilles = (uint16_t *) calloc(nbrCloux + nbrRangees + 1, sizeof(uint16_t));
+   uint16_t *compteurBilles = (uint16_t *)
+      calloc(nbrCloux + nbrRangees + 1, sizeof(uint16_t));
+
    assert(compteurBilles != NULL); // assertion si allocation impossible.
    uint16_t *compteurBacBilles = &compteurBilles[nbrCloux];
 
@@ -214,7 +222,8 @@ uint16_t** simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
 
       //incrementation des compteurs sous le compteur n°clouActuel selon l'aléatoire
       for (size_t j = 0; j < compteurBilles[clouActuel]; ++j)
-         rand() & 1 ? ++compteurBilles[clouActuel + rangeeActuel + 1] : ++compteurBilles[clouActuel + rangeeActuel];
+         rand() & 1 ? ++compteurBilles[clouActuel + rangeeActuel + 1] :
+         ++compteurBilles[clouActuel + rangeeActuel];
 
    }
 
