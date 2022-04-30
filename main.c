@@ -5,13 +5,15 @@
                   Kylian Manzini
  Date creation  : 26.04.22
 
- Description    : Laboratoire 01 de PRG2 : Simulation d'une planche de type "Galton Board".
+ Description    : Laboratoire 01 de PRG2 : Simulation d'une planche de type
+                  "Galton Board".
 
-                  Deux entrée sont demandées à l'utilisateurs, le nombre de billes et le nombre de rangées de
+                  Deux entrée sont demandées à l'utilisateurs, le nombre de billes
+                  et le nombre de rangées de
                   la planche, dans cet ordre.
 
-                  Affichage du nombre de billes à chaques rangée de la planche, ainsi qu'un histogramme
-                  de la ditribution des billes.
+                  Affichage du nombre de billes à chaques rangée de la planche,
+                  ainsi qu'un histogramme de la ditribution des billes.
 
  Remarque(s)    : -
 
@@ -26,7 +28,8 @@
 #include <assert.h>  // Ajout de assert
 #include <math.h>    // Utilisation de ceil et log10
 
-// Utiliser la macro CHAINE permets de placer le contenu d'une macro (qui n'est pas une chaine de caractères)
+// Utiliser la macro CHAINE permets de placer le contenu d'une macro
+// (qui n'est pas une chaine de caractères)
 // dans une chaîne de caractères.
 #define CHAINE_CODE(x) #x
 #define CHAINE(x) CHAINE_CODE(x)
@@ -47,7 +50,7 @@
 #define PALIER_HIST 15
 
 // Limite de la taille du chiffre en entrée pour éviter les overflow de int.
-#define MAX_CHAR 6
+#define MAX_CHAR 5
 
 /// Permet à l'utilisateur de saisir un nombre entre min et max
 /// \param message Message de contexte destiné à l'utilisateur
@@ -55,32 +58,45 @@
 /// \param min Valeur min
 /// \param max Valenr max
 /// \return uint16_t valeur saisie par l'utilisateur après vérification
-uint16_t saisieIntervalle(char *message, char *erreur, uint16_t min, uint16_t max);
+uint16_t saisieIntervalle(char *message,
+                          char *erreur,
+                          uint16_t min,
+                          uint16_t max);
 
-/// Affiche les differents passages des billes dans la planche de Galton et son histogramme
+/// Affiche les differents passages des billes dans la planche de Galton
+/// et son histogramme
 /// \param plancheGalton planche de galton associée
 /// \param nbrRangees nombre de rangée de la planche
-void affichageSimulationGaltonBoard(const uint16_t **plancheGalton, uint16_t nbrRangees);
+void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
+                                    uint16_t nbrRangees);
 
 /// Crée une planche de galton avec les parametres fournis \n
-/// /!\ Attention : nécéssaire d'utiliser free(plancheGaltion[0]) afin d'eviter les fuites de mémoires
+/// /!\ Attention : nécéssaire d'utiliser free(plancheGaltion[0])
+/// afin d'eviter les fuites de mémoires
 /// \param nbrRangees nombre de rangée de la planche
 /// \param nbrBilles nombre de bille
 /// \param affichage si oui ou non l'on veut afficher les données
 /// \return tableau de 2 pointeurs
-uint16_t **simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles);
+uint16_t** simulationPlancheGalton(uint16_t nbrRangees,
+                                   uint16_t nbrBilles);
 
 void viderBuffer(void);
 
 int main(void) {
    // Inputs utilisateurs pour obtenir le nombre de billes et de rangées souhaitées.
-   uint16_t nbrBilles = saisieIntervalle(MSG_BILLES, MSG_ERREUR, MIN_BILLES, MAX_BILLES);
-   uint16_t nbrRangees = saisieIntervalle(MSG_RANGEE, MSG_ERREUR, MIN_RANGEE, MAX_RANGEE);
+   uint16_t nbrBilles = saisieIntervalle(MSG_BILLES, MSG_ERREUR,
+                                         MIN_BILLES, MAX_BILLES);
+   uint16_t nbrRangees = saisieIntervalle(MSG_RANGEE, MSG_ERREUR,
+                                          MIN_RANGEE, MAX_RANGEE);
 
+   // Démarrage de la simulation et récupération d'un pointeur sur les données.
    uint16_t **PlancheGalton = simulationPlancheGalton(nbrRangees, nbrBilles);
-   affichageSimulationGaltonBoard((const uint16_t **) (uint16_t **) PlancheGalton, nbrRangees);
+
+   affichageSimulationGaltonBoard((const uint16_t **) PlancheGalton,
+                                  nbrRangees);
    system("pause");
 
+   // Libération de la mémoire allouée pour le stockage des données.
    free(PlancheGalton[0]);
    free(PlancheGalton);
 
@@ -94,13 +110,20 @@ void viderBuffer(void) {
 
 uint16_t saisieIntervalle(char *message, char *erreur, uint16_t min, uint16_t max) {
    assert(min < max);
-   uint16_t entree;
+   uint32_t entree;
+
+   // La condition du do...while permets de vérifier l'entrée et d'afficher
+   // le message d'erreur. On a pri avantage des cas de court-circuitages et
+   // de l'opérateur virgule afin de compacter le code.
    do {
       printf("%s [%d - %d] : ", message, min, max);
    } while (
-      (!(scanf("%"CHAINE(MAX_CHAR)"hd%*[^\n]", &entree)) || (entree > max || entree < min))
-      && (viderBuffer(), printf("%s\n", erreur)));
-   return entree;
+         (!(scanf("%"CHAINE(MAX_CHAR)"d%*[^\n]", &entree))
+         || (entree > max || entree < min))
+         && (viderBuffer(), printf("%s\n", erreur)));
+
+   assert(entree < UINT16_MAX);
+   return (uint16_t)entree;
 }
 
 void affichageSimulationGaltonBoard(const uint16_t **plancheGalton, uint16_t nbrRangees) {
@@ -162,7 +185,7 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton, uint16_t nbr
    printf("\n");
 }
 
-uint16_t **simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
+uint16_t** simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
 
    //generation d'une graine aléatoire
    srand((unsigned int) time(NULL));
