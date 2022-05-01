@@ -77,7 +77,7 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
 /// \param nbrBilles nombre de bille
 /// \param affichage si oui ou non l'on veut afficher les données
 /// \return tableau de 2 pointeurs
-uint16_t** simulationPlancheGalton(uint16_t nbrRangees,
+uint16_t **simulationPlancheGalton(uint16_t nbrRangees,
                                    uint16_t nbrBilles);
 
 void viderBuffer(void);
@@ -108,7 +108,10 @@ void viderBuffer(void) {
    while ((c = getchar()) != '\n' && c != EOF);
 }
 
-uint16_t saisieIntervalle(char *message, char *erreur, uint16_t min, uint16_t max) {
+uint16_t saisieIntervalle(char *message,
+                          char *erreur,
+                          uint16_t min,
+                          uint16_t max) {
    assert(min < max);
    uint32_t entree;
 
@@ -118,34 +121,32 @@ uint16_t saisieIntervalle(char *message, char *erreur, uint16_t min, uint16_t ma
    do {
       printf("%s [%d - %d] : ", message, min, max);
    } while (
-         (!(scanf("%"CHAINE(MAX_CHAR)"u%*[^\n]", &entree))
-         || (entree > max || entree < min))
-         && (viderBuffer(), printf("%s\n", erreur)));
+      (!(scanf("%"CHAINE(MAX_CHAR)"u%*[^\n]", &entree))
+       || (entree > max || entree < min))
+       && (viderBuffer(), printf("%s\n", erreur)));
 
    assert(entree < UINT16_MAX);
-   return (uint16_t)entree;
+   return (uint16_t) entree;
 }
 
 void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
                                     uint16_t nbrRangees) {
-
    /////////////////////
    // PARTIE PYRAMIDE
    /////////////////////
 
    size_t indexCompteur = 0;
-   uint8_t nbrChiffreSommet = (uint8_t) ceil(log10(plancheGalton[0][0]));
+   uint8_t nbrChiffreSommet = (uint8_t)
+      ceil(log10((double) plancheGalton[0][0] + 1));
+
    uint16_t multiplicateurEspace = nbrRangees;
 
    printf("\n");
    for (size_t i = 0; i < nbrRangees; ++i, --multiplicateurEspace) {
       for (size_t j = 0; j <= i; ++j, ++indexCompteur) {
          if (!j)
-            printf("%*c",
-                   (multiplicateurEspace * (nbrChiffreSommet + 1)) / 2,
-                   ' ');
-         printf("% *d", nbrChiffreSommet + 1,
-                plancheGalton[0][indexCompteur]);
+            printf("%*c", (multiplicateurEspace * (nbrChiffreSommet + 1)) / 2, ' ');
+         printf("%*d", nbrChiffreSommet + 1, plancheGalton[0][indexCompteur]);
       }
       printf("%c", '\n');
    }
@@ -178,7 +179,7 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
       histogramme[i] = nbrBarre;
    }
    for (int i = PALIER_HIST; i > 0; --i) {
-      printf("  ");
+      printf("%*c", nbrChiffreSommet - 2, ' ');
       for (int j = 0; j < nbrRangees; ++j) {
          if (histogramme[j] >= i)
             printf("%*c", nbrChiffreSommet + 1, '*');
@@ -190,7 +191,7 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
    printf("\n");
 }
 
-uint16_t** simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
+uint16_t **simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
 
    //generation d'une graine aléatoire
    srand((unsigned int) time(NULL));
@@ -199,7 +200,7 @@ uint16_t** simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
       (((nbrRangees * (nbrRangees + 1)) / 2) - (nbrRangees));
 
    uint16_t *compteurBilles = (uint16_t *)
-      calloc((size_t)(nbrCloux + nbrRangees + 1), sizeof(uint16_t));
+      calloc((size_t) (nbrCloux + nbrRangees + 1), sizeof(uint16_t));
 
    assert(compteurBilles != NULL); // assertion si allocation impossible.
    uint16_t *compteurBacBilles = &compteurBilles[nbrCloux];
@@ -216,8 +217,8 @@ uint16_t** simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
 
       //condition pour determiner la rangee actuelle
       if (clouActuel + 1 > sommeClous) {
-         ++rangeeActuel;
-         sommeClous += rangeeActuel;
+         rangeeActuel = (uint16_t) (rangeeActuel + 1);
+         sommeClous   = (uint16_t) (sommeClous + rangeeActuel);
       }
 
       //incrementation des compteurs sous le compteur n°clouActuel selon l'aléatoire
