@@ -14,23 +14,23 @@
                   Affichage du nombre de billes à chaques rangée de la planche,
                   ainsi qu'un histogramme de la ditribution des billes.
 
- Remarque(s)    : Le programme va demander deux entrées à l'utilisateurs puis
+ Remarque(s)    : Le programme va demander deux entrées à l'utilisateur puis
                   attendra une pression du clavier pour terminer le programme.
 
  Compilateur    : Mingw-w64 gcc 11.2.0
  -----------------------------------------------------------------------------------
 */
 
-#include <stdio.h>   // Utilisé pour le I/O du programme (scanf, printf)
-#include <stdlib.h>  // Macros utiles (EXIT_SUCCESS)
-#include <time.h>    // Pour time(NULL), création d'aléatoire
-#include <stdint.h>  // Afin d'utiliser des grandeurs de variables fixes.
-#include <assert.h>  // Ajout de assert
-#include <math.h>    // Utilisation de ceil et log10
+#include <stdio.h>    // Utilisé pour le I/O du programme (scanf, printf)
+#include <stdlib.h>   // Macros utiles (EXIT_SUCCESS)
+#include <time.h>     // Pour time(NULL), création d'aléatoire
+#include <stdint.h>   // Afin d'utiliser des grandeurs de variables fixes.
+#include <assert.h>   // Ajout de assert()
+#include <math.h>     // Utilisation de ceil() et log10()
+#include <inttypes.h> // Pour PRIu16
 
-// Utiliser la macro CHAINE permets de placer le contenu d'une macro
-// (qui n'est pas une chaine de caractères)
-// dans une chaîne de caractères.
+// Utiliser la macro CHAINE permet de placer le contenu d'une macro
+// (qui n'est pas une chaîne de caractères) dans une chaîne de caractères.
 #define CHAINE_CODE(x) #x
 #define CHAINE(x) CHAINE_CODE(x)
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
@@ -39,7 +39,7 @@
 #define MSG_BILLES "Entrez le nombre de billes"
 #define MSG_RANGEE "Entrez le nombre de rangees de compteurs"
 #define MSG_ERREUR "Saisie incorrecte. Veuillez SVP recommencer."
-#define CHAR_ESPACE ' '
+#define CHAR_VIDE ' '
 #define CHAR_HIST '*'
 
 // Limites des intervalles ouvertes.
@@ -51,32 +51,34 @@
 // Hauteur maximale de l'histogramme.
 #define PALIER_HIST 15
 
-// Limite de la taille du chiffre en entrée pour éviter les overflow de int.
+// Limite de la taille du chiffre en entrée pour éviter les dépassements d'entiers
+// non signés.
 #define MAX_CHAR 5
 
 /// Permet à l'utilisateur de saisir un nombre entre l'intervalle [min, max]
 /// \param message Message de contexte destiné à l'utilisateur
 /// \param erreur Message en cas de saisie erronée
-/// \param min Valeur min
-/// \param max Valeur max
+/// \param min Valeur minimum
+/// \param max Valeur maximum
 /// \return uint16_t Valeur saisie par l'utilisateur après vérification
 uint16_t saisieIntervalle(char* message,
                           char* erreur,
                           uint16_t min,
                           uint16_t max);
 
-/// Affiche les differents passages des billes dans la planche de Galton
+/// Affiche les différents passages des billes dans la planche de Galton
 /// et son histogramme
 /// \param plancheGalton planche de galton associée
 /// \param nbrRangees nombre de rangée de la planche
 void affichageSimulationGaltonBoard(const uint16_t** plancheGalton,
                                     uint16_t nbrRangees);
 
-/// Crée une planche de galton avec les parametres fournis
+/// Crée une planche de galton avec les paramètres fournis
 /// /!\ Attention : nécessaire d'utiliser free(plancheGaltion[0])
-/// afin d'eviter les fuites de mémoires
-/// \param nbrRangees nombre de rangée de la planche
-/// \param nbrBilles nombre de bille
+///                 et ensuite nécessaire d'utiliser free(plancheGaltion)
+///                 afin d'eviter les fuites de mémoires
+/// \param nbrRangees nombre de rangées de la planche
+/// \param nbrBilles nombre de billes
 /// \return tableau de 2 pointeurs
 uint16_t** simulationPlancheGalton(uint16_t nbrRangees,
                                    uint16_t nbrBilles);
@@ -84,7 +86,7 @@ uint16_t** simulationPlancheGalton(uint16_t nbrRangees,
 void viderBuffer(void);
 
 int main(void) {
-   // Inputs utilisateurs pour obtenir le nombre de billes et de rangées souhaitées.
+   // Entrées utilisateurs pour obtenir le nombre de billes et de rangées souhaitées.
    uint16_t nbrBilles = saisieIntervalle(MSG_BILLES, MSG_ERREUR,
                                          MIN_BILLES, MAX_BILLES);
    uint16_t nbrRangees = saisieIntervalle(MSG_RANGEE, MSG_ERREUR,
@@ -114,13 +116,13 @@ uint16_t saisieIntervalle(char *message, char *erreur,
    assert(min < max);
    uint32_t entree;
 
-   // La condition du do...while permets de vérifier l'entrée et d'afficher
-   // le message d'erreur. On a pri avantage des cas de court-circuitages et
+   // La condition du do...while permet de vérifier l'entrée et d'afficher
+   // le message d'erreur. Nous avons pris avantage des cas de court-circuitages et
    // de l'opérateur virgule afin de compacter le code.
    do {
-      printf("%s [%d - %d] : ", message, min, max);
+      printf("%s [%"PRIu16" - %"PRIu16"] : ", message, min, max);
    } while (
-      (!(scanf("%"CHAINE(MAX_CHAR)"u%*[^\n]", &entree))
+      (!(scanf("%"CHAINE(MAX_CHAR)""PRIu32"%*[^\n]", &entree))
        || (entree > max || entree < min))
        && (viderBuffer(), printf("%s\n", erreur)));
 
@@ -146,8 +148,8 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
       for (size_t j = 0; j <= i; ++j, ++indexCompteur) {
          if (!j)
             printf("%*c", (multiplicateurEspace * (nbrChiffreSommet + 1)) / 2,
-                   CHAR_ESPACE);
-         printf("%*d", nbrChiffreSommet + 1,
+                   CHAR_VIDE);
+         printf("%*"PRIu16, nbrChiffreSommet + 1,
                 plancheGalton[0][indexCompteur]);
       }
       printf("%c", '\n');
@@ -181,12 +183,12 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
       histogramme[i] = nbrBarre;
    }
    for (int i = PALIER_HIST; i > 0; --i) {
-      printf("%*c", nbrChiffreSommet - 2, CHAR_ESPACE);
+      printf("%*c", nbrChiffreSommet - 2, CHAR_VIDE);
       for (int j = 0; j < nbrRangees; ++j) {
          if (histogramme[j] >= i)
             printf("%*c", nbrChiffreSommet + 1, CHAR_HIST);
          else
-            printf("%*c", nbrChiffreSommet + 1, CHAR_ESPACE);
+            printf("%*c", nbrChiffreSommet + 1, CHAR_VIDE);
       }
       printf("\n");
    }
@@ -209,12 +211,12 @@ uint16_t** simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
 
    // La rangée actuelle
    uint16_t rangeeActuel = 1;
-   // Nombre de cloux précedant la rangàe actuelle
+   // Nombre de clous précedant la rangée actuelle
    uint16_t sommeClous = 1;
    // Valeur du compteur du premier clou
    compteurBilles[0] = nbrBilles;
 
-   // Itération à travers tous les cloux de la planche
+   // Itération à travers tous les clous de la planche
    for (size_t clouActuel = 0; clouActuel < nbrCloux; ++clouActuel) {
 
       // Condition pour déterminer la rangée actuelle
