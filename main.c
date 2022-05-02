@@ -8,7 +8,7 @@
  Description    : Laboratoire 01 - PRG2 : Simulation d'une planche de type
                   "Galton Board".
 
-                  Deux entrée sont demandées à l'utilisateurs, le nombre de billes
+                  Deux entrées sont demandées à l'utilisateur, le nombre de billes
                   et le nombre de rangées de la planche, dans cet ordre.
 
                   Affichage du nombre de billes à chaques rangée de la planche,
@@ -43,10 +43,10 @@
 #define CHAR_HIST '*'
 
 // Limites des intervalles ouvertes.
-#define MIN_BILLES  1000
-#define MAX_BILLES  30000
-#define MIN_RANGEE  10
-#define MAX_RANGEE  20
+#define MIN_BILLES 1000
+#define MAX_BILLES 30000
+#define MIN_RANGEE 10
+#define MAX_RANGEE 20
 
 // Hauteur maximale de l'histogramme.
 #define PALIER_HIST 15
@@ -60,8 +60,8 @@
 /// \param min Valeur min
 /// \param max Valeur max
 /// \return uint16_t Valeur saisie par l'utilisateur après vérification
-uint16_t saisieIntervalle(char *message,
-                          char *erreur,
+uint16_t saisieIntervalle(char* message,
+                          char* erreur,
                           uint16_t min,
                           uint16_t max);
 
@@ -69,17 +69,17 @@ uint16_t saisieIntervalle(char *message,
 /// et son histogramme
 /// \param plancheGalton planche de galton associée
 /// \param nbrRangees nombre de rangée de la planche
-void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
+void affichageSimulationGaltonBoard(const uint16_t** plancheGalton,
                                     uint16_t nbrRangees);
 
 /// Crée une planche de galton avec les parametres fournis \n
-/// /!\ Attention : nécéssaire d'utiliser free(plancheGaltion[0])
+/// /!\ Attention : nécessaire d'utiliser free(plancheGaltion[0])
 /// afin d'eviter les fuites de mémoires
 /// \param nbrRangees nombre de rangée de la planche
 /// \param nbrBilles nombre de bille
 /// \param affichage si oui ou non l'on veut afficher les données
 /// \return tableau de 2 pointeurs
-uint16_t **simulationPlancheGalton(uint16_t nbrRangees,
+uint16_t** simulationPlancheGalton(uint16_t nbrRangees,
                                    uint16_t nbrBilles);
 
 void viderBuffer(void);
@@ -110,10 +110,8 @@ void viderBuffer(void) {
    while ((c = getchar()) != '\n' && c != EOF);
 }
 
-uint16_t saisieIntervalle(char *message,
-                          char *erreur,
-                          uint16_t min,
-                          uint16_t max) {
+uint16_t saisieIntervalle(char *message, char *erreur,
+                          uint16_t min, uint16_t max) {
    assert(min < max);
    uint32_t entree;
 
@@ -127,6 +125,7 @@ uint16_t saisieIntervalle(char *message,
        || (entree > max || entree < min))
        && (viderBuffer(), printf("%s\n", erreur)));
 
+   viderBuffer();
    assert(entree < UINT16_MAX);
    return (uint16_t) entree;
 }
@@ -147,8 +146,10 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
    for (size_t i = 0; i < nbrRangees; ++i, --multiplicateurEspace) {
       for (size_t j = 0; j <= i; ++j, ++indexCompteur) {
          if (!j)
-            printf("%*c", (multiplicateurEspace * (nbrChiffreSommet + 1)) / 2, ' ');
-         printf("%*d", nbrChiffreSommet + 1, plancheGalton[0][indexCompteur]);
+            printf("%*c", (multiplicateurEspace * (nbrChiffreSommet + 1)) / 2,
+                   CHAR_ESPACE);
+         printf("%*d", nbrChiffreSommet + 1,
+                plancheGalton[0][indexCompteur]);
       }
       printf("%c", '\n');
    }
@@ -181,9 +182,9 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
       histogramme[i] = nbrBarre;
    }
    for (int i = PALIER_HIST; i > 0; --i) {
-      printf("%*c", nbrChiffreSommet - 2, ' ');
+      printf("%*c", nbrChiffreSommet - 2, CHAR_ESPACE);
       for (int j = 0; j < nbrRangees; ++j) {
-         if (histogramme[j] >= i)q
+         if (histogramme[j] >= i)
             printf("%*c", nbrChiffreSommet + 1, CHAR_HIST);
          else
             printf("%*c", nbrChiffreSommet + 1, CHAR_ESPACE);
@@ -193,7 +194,7 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
    printf("\n");
 }
 
-uint16_t **simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
+uint16_t** simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
 
    // Génération d'une graine aléatoire
    srand((unsigned int) time(NULL));
@@ -231,7 +232,9 @@ uint16_t **simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
 
    }
 
-   uint16_t **plancheGalton = (uint16_t **) malloc(2 * sizeof(uint16_t *));
+   uint16_t** plancheGalton = (uint16_t **) malloc(2 * sizeof(uint16_t *));
+   assert(plancheGalton != NULL);
+
    plancheGalton[0] = compteurBilles;
    plancheGalton[1] = compteurBacBilles;
 
