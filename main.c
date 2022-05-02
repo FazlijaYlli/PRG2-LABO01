@@ -77,7 +77,6 @@ void affichageSimulationGaltonBoard(const uint16_t** plancheGalton,
 /// afin d'eviter les fuites de mémoires
 /// \param nbrRangees nombre de rangée de la planche
 /// \param nbrBilles nombre de bille
-/// \param affichage si oui ou non l'on veut afficher les données
 /// \return tableau de 2 pointeurs
 uint16_t** simulationPlancheGalton(uint16_t nbrRangees,
                                    uint16_t nbrBilles);
