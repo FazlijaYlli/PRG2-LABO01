@@ -72,7 +72,7 @@ uint16_t saisieIntervalle(char* message,
 void affichageSimulationGaltonBoard(const uint16_t** plancheGalton,
                                     uint16_t nbrRangees);
 
-/// Crée une planche de galton avec les parametres fournis \n
+/// Crée une planche de galton avec les parametres fournis
 /// /!\ Attention : nécessaire d'utiliser free(plancheGaltion[0])
 /// afin d'eviter les fuites de mémoires
 /// \param nbrRangees nombre de rangée de la planche
@@ -91,15 +91,15 @@ int main(void) {
                                           MIN_RANGEE, MAX_RANGEE);
 
    // Démarrage de la simulation et récupération d'un pointeur sur les données.
-   uint16_t **PlancheGalton = simulationPlancheGalton(nbrRangees, nbrBilles);
+   uint16_t **plancheGalton = simulationPlancheGalton(nbrRangees, nbrBilles);
 
-   affichageSimulationGaltonBoard((const uint16_t **) PlancheGalton,
+   affichageSimulationGaltonBoard((const uint16_t **) plancheGalton,
                                   nbrRangees);
    system("pause");
 
    // Libération de la mémoire allouée pour le stockage des données.
-   free(PlancheGalton[0]);
-   free(PlancheGalton);
+   free(plancheGalton[0]);
+   free(plancheGalton);
 
    return EXIT_SUCCESS;
 }
