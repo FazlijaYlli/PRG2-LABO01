@@ -5,17 +5,17 @@
                   Kylian Manzini
  Date creation  : 26.04.22
 
- Description    : Laboratoire 01 de PRG2 : Simulation d'une planche de type
+ Description    : Laboratoire 01 - PRG2 : Simulation d'une planche de type
                   "Galton Board".
 
                   Deux entrée sont demandées à l'utilisateurs, le nombre de billes
-                  et le nombre de rangées de
-                  la planche, dans cet ordre.
+                  et le nombre de rangées de la planche, dans cet ordre.
 
                   Affichage du nombre de billes à chaques rangée de la planche,
                   ainsi qu'un histogramme de la ditribution des billes.
 
- Remarque(s)    : -
+ Remarque(s)    : Le programme va demander deux entrées à l'utilisateurs puis
+                  attendra une pression du clavier pour terminer le programme.
 
  Compilateur    : Mingw-w64 gcc 11.2.0
  -----------------------------------------------------------------------------------
@@ -39,6 +39,8 @@
 #define MSG_BILLES "Entrez le nombre de billes"
 #define MSG_RANGEE "Entrez le nombre de rangees de compteurs"
 #define MSG_ERREUR "Saisie incorrecte. Veuillez SVP recommencer."
+#define CHAR_ESPACE ' '
+#define CHAR_HIST '*'
 
 // Limites des intervalles ouvertes.
 #define MIN_BILLES  1000
@@ -52,12 +54,12 @@
 // Limite de la taille du chiffre en entrée pour éviter les overflow de int.
 #define MAX_CHAR 5
 
-/// Permet à l'utilisateur de saisir un nombre entre min et max
+/// Permet à l'utilisateur de saisir un nombre entre l'intervalle [min, max]
 /// \param message Message de contexte destiné à l'utilisateur
-/// \param erreur Message en cas de mauvaise saisie
+/// \param erreur Message en cas de saisie erronée
 /// \param min Valeur min
-/// \param max Valenr max
-/// \return uint16_t valeur saisie par l'utilisateur après vérification
+/// \param max Valeur max
+/// \return uint16_t Valeur saisie par l'utilisateur après vérification
 uint16_t saisieIntervalle(char *message,
                           char *erreur,
                           uint16_t min,
@@ -117,10 +119,10 @@ uint16_t saisieIntervalle(char *message, char *erreur, uint16_t min, uint16_t ma
    // de l'opérateur virgule afin de compacter le code.
    do {
       printf("%s [%d - %d] : ", message, min, max);
-   } while (
-         (!(scanf("%"CHAINE(MAX_CHAR)"u%*[^\n]", &entree))
-         || (entree > max || entree < min))
-         && (viderBuffer(), printf("%s\n", erreur)));
+   } while ((!(scanf("%"CHAINE(MAX_CHAR)"u%*[^\n]", &entree))
+            || (entree > max || entree < min))
+            && (viderBuffer(), printf("%s\n", erreur))
+            );
 
    assert(entree < UINT16_MAX);
    return (uint16_t)entree;
@@ -143,7 +145,7 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
          if (!j)
             printf("%*c",
                    (multiplicateurEspace * (nbrChiffreSommet + 1)) / 2,
-                   ' ');
+                   CHAR_ESPACE);
          printf("% *d", nbrChiffreSommet + 1,
                 plancheGalton[0][indexCompteur]);
       }
@@ -180,10 +182,10 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
    for (int i = PALIER_HIST; i > 0; --i) {
       printf("  ");
       for (int j = 0; j < nbrRangees; ++j) {
-         if (histogramme[j] >= i)
-            printf("%*c", nbrChiffreSommet + 1, '*');
+         if (histogramme[j] >= i)q
+            printf("%*c", nbrChiffreSommet + 1, CHAR_HIST);
          else
-            printf("%*c", nbrChiffreSommet + 1, ' ');
+            printf("%*c", nbrChiffreSommet + 1, CHAR_ESPACE);
       }
       printf("\n");
    }
@@ -192,7 +194,7 @@ void affichageSimulationGaltonBoard(const uint16_t **plancheGalton,
 
 uint16_t** simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
 
-   //generation d'une graine aléatoire
+   // Génération d'une graine aléatoire
    srand((unsigned int) time(NULL));
 
    uint16_t nbrCloux = (uint16_t)
@@ -201,26 +203,27 @@ uint16_t** simulationPlancheGalton(uint16_t nbrRangees, uint16_t nbrBilles) {
    uint16_t *compteurBilles = (uint16_t *)
       calloc((size_t)(nbrCloux + nbrRangees + 1), sizeof(uint16_t));
 
-   assert(compteurBilles != NULL); // assertion si allocation impossible.
+   assert(compteurBilles != NULL); // Assertion si allocation impossible.
    uint16_t *compteurBacBilles = &compteurBilles[nbrCloux];
 
-   //la rangee actuelle
+   // La rangée actuelle
    uint16_t rangeeActuel = 1;
-   //nombre de clou precedant la rangee actuelle
+   // Nombre de cloux précedant la rangàe actuelle
    uint16_t sommeClous = 1;
-   //valeur du compteur du premier clou
+   // Valeur du compteur du premier clou
    compteurBilles[0] = nbrBilles;
 
-   //iteration à travers tout les clous de la planche
+   // Itération à travers tous les cloux de la planche
    for (size_t clouActuel = 0; clouActuel < nbrCloux; ++clouActuel) {
 
-      //condition pour determiner la rangee actuelle
+      // Condition pour déterminer la rangée actuelle
       if (clouActuel + 1 > sommeClous) {
          ++rangeeActuel;
          sommeClous += rangeeActuel;
       }
 
-      //incrementation des compteurs sous le compteur n°clouActuel selon l'aléatoire
+      // Incrémentation des compteurs sous le compteur "n° du clouActuel" selon
+      // la sélection aléatoire
       for (size_t j = 0; j < compteurBilles[clouActuel]; ++j)
          rand() & 1 ? ++compteurBilles[clouActuel + rangeeActuel + 1] :
          ++compteurBilles[clouActuel + rangeeActuel];
